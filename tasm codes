@@ -1,0 +1,128 @@
+16 bit Add
+        ASSUME CS:CODE, DS:DATA
+        DATA SEGMENT
+        NUM1 DW 1234H
+        NUM2 DW 2468H
+        DATA ENDS
+        CODE SEGMENT
+        START:
+        MOV AX, DATA
+        MOV DS, AX
+        MOV AX, NUM1
+        MOV BX, NUM2
+        ADD AL, BL
+        DAA
+        ADC AH, BH
+        DAA
+        MOV CX, AX
+        MOV AH, 4CH
+        INT 03
+        CODE ENDS
+        END START
+--------------------------------------------------------------------------------------        
+Block Transfer
+        .model small
+        .data
+        BLOCK1 DB 10H,02H,30H,04H,50H
+        BLOCK2 DB 00H
+        .code
+        START:
+        MOV AX,@DATA
+        MOV DS,AX
+        MOV CX,05H
+        MOV SI,offset BLOCK1
+        MOV DI,offset BLOCK2
+        BACK:
+        MOV AL,[SI]
+        MOV [DI+3],AL
+        INC SI
+        INC DI
+        DEC CX
+        JNZ BACK
+        INT 03H
+        END
+--------------------------------------------------------------------------------------       
+1's & 0's
+        CODE SEGMENT
+        ASSUME CS:CODE
+        START:
+        MOV DS, AX
+        MOV AL, 36H
+        MOV BL, 00H
+        MOV CL, 08H
+        MOV DL, 00H
+        UP:
+        ROL AL,1
+        JC ONE
+        INC BL
+        JMP NXT
+        ONE:
+        INC DL
+        NXT:
+        DEC CL
+        JNZ UP
+        INT 3
+        CODE ENDS
+        END START
+-----------------------------------------------------------------------------------------        
+Palindrome 
+        .model small
+        .data
+        str1 db "madam"
+        len equ $-str1
+        rstr db 20 dup(0)
+        .code
+        Mov ax,@data
+        Mov ds,ax
+        mov es,ax
+        mov si,offset str1
+        mov di,offset rstr
+        add di,len-1
+        mov cx,len
+        back: mov al,[si]
+        mov [di],al
+        inc si
+        dec di
+        loop back
+        mov si,offset str1
+        mov di, offset rstr
+        mov cx,len
+        cld
+        repe cmpsb
+        jne down
+        mov bx,1111h ;If string is palindrome
+        jmp downl
+        down: mov bx,0101h ;If string is not palindrome
+        downl:
+        int 03h
+        end
+-----------------------------------------------------------------------------------------
+Fibonacci        
+        data SEGMENT
+        cnt DB 10
+        fib DB 10 DUP(0)
+        data ENDS
+        code SEGMENT
+        ASSUME CS:code,DS:data
+        START:
+        MOV AX,data
+        MOV DS,AX
+        MOV AL,00H
+        LEA SI,fib
+        MOV [SI],AL
+        INC SI
+        INC AL
+        MOV [SI],AL
+        MOV CL,cnt
+        MOV CH,00H
+        SUB CX,02H
+        L1:
+        MOV AL,[SI-1]
+        ADD AL,[SI]
+        DAA
+        INC SI
+        MOV [SI],AL
+        LOOP L1
+        INT 03H
+        code ENDS
+        END START
